@@ -21,18 +21,18 @@ CONTAINER_NAME="picocalc-lyra-build-$(date +%s)"
 # Pass any arguments to the container entrypoint
 if [ $# -gt 0 ]; then
     docker run --name "$CONTAINER_NAME" \
-        -v "$(pwd)/.ccache:/home/build/.ccache" \
+        -v "$(pwd)/.ccache:/home/build/.ccache:Z" \
         picocalc-lyra-builder "$@"
 else
     docker run --name "$CONTAINER_NAME" \
-        -v "$(pwd)/.ccache:/home/build/.ccache" \
+        -v "$(pwd)/.ccache:/home/build/.ccache:Z" \
         picocalc-lyra-builder
 fi
 
 # Copy the built images from the container to the host
 echo "Copying built images from container..."
 if docker exec "$CONTAINER_NAME" test -d /opt/Lyra-SDK/rockdev 2>/dev/null; then
-    docker cp -L "$CONTAINER_NAME:/opt/Lyra-SDK/rockdev/." "$(pwd)/output/" 2>/dev/null || echo "No files to copy from rockdev directory"
+    docker cp "$CONTAINER_NAME:/opt/Lyra-SDK/rockdev/." "$(pwd)/output/" 2>/dev/null || echo "No files to copy from rockdev directory"
 
     echo ""
     echo "Build completed! Built images are available in the ./output directory:"

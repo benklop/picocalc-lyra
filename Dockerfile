@@ -31,15 +31,26 @@ RUN chown -R build:build /opt/Lyra-SDK
 # Set up ccache for faster builds
 RUN mkdir -p /home/build/.ccache
 RUN chown -R build:build /home/build/.ccache
+RUN chmod 755 /home/build/.ccache
+
+# Set resource limits to prevent fork bombs
+RUN echo "build soft nproc 65536" >> /etc/security/limits.conf && \
+    echo "build hard nproc 65536" >> /etc/security/limits.conf
+
 USER build
 
 # Configure ccache
 ENV CCACHE_DIR=/home/build/.ccache
-ENV CCACHE_MAXSIZE=20G
+ENV CCACHE_MAXSIZE=2G
+ENV CCACHE_SLOPPINESS=pch_defines,time_macros
+ENV CCACHE_COMPRESS=true
+ENV CCACHE_COMPRESSLEVEL=6
+ENV CCACHE_MAXFILES=1000000
 ENV PATH="/usr/lib/ccache:$PATH"
 
-# Set parallel build options
-ENV MAKEFLAGS="-j$(nproc)"
+# Set conservative parallel build options to avoid resource exhaustion
+# Use half of available cores to leave plenty of headroom for nested builds
+ENV MAKEFLAGS="-j$(($(nproc) / 2))"
 ENV NINJA_STATUS="[%f/%t] "
 
 # Copy and unpack the Luckfox Lyra SDK
