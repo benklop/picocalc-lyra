@@ -3,7 +3,7 @@ output/
 
 # SDK tarball - large file that should be downloaded separately
 Luckfox_Lyra_SDK_*.tar.gz
-sdk/
+Lyra-SDK/
 # Ccache directory - used for caching build artifacts
 .ccache/
 

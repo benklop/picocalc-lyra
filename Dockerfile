@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y git ssh make gcc libssl-dev \
     diffstat binfmt-support qemu-user-static live-build bison flex fakeroot \
     cmake gcc-multilib g++-multilib unzip device-tree-compiler ncurses-dev \
     libgucharmap-2-90-dev bzip2 expat gpgv2 cpp-aarch64-linux-gnu libgmp-dev \
-    libmpc-dev bc python-is-python3 python2 rsync curl file ccache \
+    libmpc-dev bc python-is-python3 python2 rsync curl file ccache util-linux \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Configure the required python2 environment
