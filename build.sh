@@ -29,19 +29,20 @@ else
         picocalc-lyra-builder
 fi
 
-# Copy the built images from the container to the host
-echo "Copying built images from container..."
-if docker exec "$CONTAINER_NAME" test -d /opt/Lyra-SDK/rockdev 2>/dev/null; then
-    docker cp "$CONTAINER_NAME:/opt/Lyra-SDK/rockdev/." "$(pwd)/output/" 2>/dev/null || echo "No files to copy from rockdev directory"
-
+# Copy build artifacts using our specialized script
+echo "Copying build artifacts from container..."
+if ./scripts/copy-build-artifacts.sh "$CONTAINER_NAME"; then
     echo ""
     echo "Build completed! Built images are available in the ./output directory:"
     ls -la "$(pwd)/output/"
     echo ""
-    echo "The main image file is: ./output/update.img"
+    if [ -f "$(pwd)/output/update.img" ]; then
+        echo "The main image file is: ./output/update.img"
+    fi
     echo "Individual components are also available (boot.img, rootfs.img, etc.)"
 else
-    echo "No rockdev directory found in container - this is normal for partial builds"
+    echo "Failed to copy build artifacts from container"
+    echo "You can manually copy them using: ./scripts/copy-build-artifacts.sh $CONTAINER_NAME"
 fi
 
 # Check if 'clean' argument was provided
